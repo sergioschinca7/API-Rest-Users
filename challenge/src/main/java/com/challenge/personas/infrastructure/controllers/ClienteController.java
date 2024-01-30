@@ -5,6 +5,7 @@
 package com.challenge.personas.infrastructure.controllers;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.challenge.personas.domain.Cliente;
@@ -65,7 +66,7 @@ public class ClienteController {
 
     @PutMapping("/modificar")
     public Cliente updateCliente(@RequestBody Cliente cliente) {
-
+        //TODO DEVOLVER UN Response ok en lugar del propio objeto.
         clienteServicio.guardar(cliente);
 
         simpMessagingTemplate.convertAndSend("/topic/abm", "Cliente modificado "
