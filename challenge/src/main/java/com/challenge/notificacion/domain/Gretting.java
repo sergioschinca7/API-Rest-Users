@@ -5,9 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class Notificacion {
+@NoArgsConstructor
+public class Gretting {
 
     private String message;
 }
