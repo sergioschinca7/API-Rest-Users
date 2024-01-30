@@ -7,12 +7,12 @@ package com.challenge.personas.infrastructure.controllers;
 import java.util.List;
 import java.util.Optional;
 
-import com.challenge.notificacion.domain.Notificacion;
-import com.challenge.notificacion.domain.NotificacionHandler;
-import com.challenge.notificacion.infrastructure.controllers.GrettingController;
 import com.challenge.personas.domain.Cliente;
 import com.challenge.personas.domain.service.ClienteServicio;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.socket.TextMessage;
 
 @RestController
 @RequestMapping("/")
@@ -31,13 +30,12 @@ public class ClienteController {
     private ClienteServicio clienteServicio;
 
     @Autowired
-    private GrettingController grettingController;
-
-    @Autowired
-    private NotificacionHandler notificacionHandler;
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @GetMapping("/clientes")
     public List<Cliente> findAll() {
+        simpMessagingTemplate.convertAndSend("/topic/abm", "Requeridos todos los usuarios"
+                );
         return clienteServicio.findAll();
     }
 
@@ -53,19 +51,25 @@ public class ClienteController {
     }
 
     @PostMapping("/save")
-    public Cliente addCliente(@RequestBody Cliente cliente) throws Exception {
+    public ResponseEntity<String> addCliente(@RequestBody Cliente cliente) {
+        try {
+            clienteServicio.guardar(cliente);
 
-        clienteServicio.guardar(cliente);
+            simpMessagingTemplate.convertAndSend("/topic/abm", "Nuevo cliente guardado: " + cliente.getNombre());
 
-        notificacionHandler.sendMessage(new TextMessage("usuario dado de alta"));
-
-        return cliente;
+            return ResponseEntity.ok("Cliente guardado exitosamente");
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al guardar el cliente");
+        }
     }
 
     @PutMapping("/modificar")
     public Cliente updateCliente(@RequestBody Cliente cliente) {
 
         clienteServicio.guardar(cliente);
+
+        simpMessagingTemplate.convertAndSend("/topic/abm", "Cliente modificado "
+                +cliente.getId());
 
         return cliente;
     }
@@ -78,6 +82,9 @@ public class ClienteController {
 
         }
         clienteServicio.eliminarById(id);
+
+        simpMessagingTemplate.convertAndSend("/topic/abm", "Cliente eliminado"
+                +cliente.get().getId());
 
         return "Eliminado el cliente - " + id;
 

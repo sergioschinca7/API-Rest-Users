@@ -1,13 +1,13 @@
-package com.challenge.notificacion.domain;
+package com.challenge.notificacion;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class Gretting {
+@AllArgsConstructor
+public class Notificacion {
 
     private String message;
 }

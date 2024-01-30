@@ -1,6 +1,5 @@
-package com.challenge.notificacion.domain;
+package com.challenge.notificacion;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.*;
@@ -8,8 +7,8 @@ import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
 @EnableWebSocket
-public class WebSocketConfiguration implements WebSocketConfigurer {
-/*
+public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic");
@@ -19,18 +18,8 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("stomp/endpoint")
+        registry.addEndpoint("ws")
                 .withSockJS();
     }
 
-
- */
-
-    @Autowired
-    private NotificacionHandler notificacionHandler;
-    @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(notificacionHandler, "/notificacion");
-
-    }
 }
